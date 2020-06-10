@@ -1,4 +1,4 @@
-package com.vanpra.composeviewpager
+package com.vanpra.viewpager
 
 
 import androidx.animation.AnimatedFloat
@@ -67,8 +67,10 @@ interface ViewPagerTransition {
                     position <= 0 -> PageState()
                     position <= 1 -> {
                         val scaleFactor = (MIN_SCALE + (1 - MIN_SCALE) * (1 - abs(position)))
-                        PageState(1 - position, scaleFactor, scaleFactor,
-                            constraints.maxWidth.value * -position)
+                        PageState(
+                            1 - position, scaleFactor, scaleFactor,
+                            constraints.maxWidth.value * -position
+                        )
                     }
                     else -> PageState(0f, 0f, 0f)
                 }
@@ -90,7 +92,12 @@ interface ViewPagerTransition {
 
                         val alpha = (MIN_ALPHA +
                                 (((scaleFactor - MIN_SCALE_ZOOM) / (1 - MIN_SCALE_ZOOM)) * (1 - MIN_ALPHA)))
-                        PageState(alpha, scaleFactor, scaleFactor, translationX)
+                        PageState(
+                            alpha,
+                            scaleFactor,
+                            scaleFactor,
+                            translationX
+                        )
                     }
                     else -> PageState(0f, 0f, 0f)
                 }
@@ -186,16 +193,19 @@ fun ViewPager(
                                 )
                         ) {
                             if ((offset.value < width && x == -1) || x == 0 || (offset.value > width && x == 1)) {
-                                val viewPagerImpl = ViewPagerImpl(index.value + x, increment)
+                                val viewPagerImpl =
+                                    ViewPagerImpl(
+                                        index.value + x,
+                                        increment
+                                    )
                                 Box(
-                                    Modifier
+                                    modifier = Modifier
                                         .weight(0.5f)
                                         .wrapContentSize(Alignment.Center)
                                         .preferredSize(
                                             maxWidth * page.scaleX,
                                             maxHeight * page.scaleY
                                         )
-                                        .gravity(Alignment.CenterHorizontally)
                                         .drawOpacity(page.alpha)
                                 ) {
                                     screenItem(viewPagerImpl)
