@@ -69,7 +69,7 @@ interface ViewPagerTransition {
                         val scaleFactor = (MIN_SCALE + (1 - MIN_SCALE) * (1 - abs(position)))
                         PageState(
                             1 - position, scaleFactor, scaleFactor,
-                            constraints.maxWidth.value * -position
+                            constraints.maxWidth * -position
                         )
                     }
                     else -> PageState(0f, 0f, 0f)
@@ -82,8 +82,8 @@ interface ViewPagerTransition {
                 return when {
                     position <= 1 && position >= -1 -> {
                         val scaleFactor = MIN_SCALE_ZOOM.coerceAtLeast(1 - abs(position))
-                        val vertMargin = constraints.maxHeight.value * (1 - scaleFactor) / 2
-                        val horzMargin =  constraints.maxWidth.value * (1 - scaleFactor) / 2
+                        val vertMargin = constraints.maxHeight * (1 - scaleFactor) / 2
+                        val horzMargin =  constraints.maxWidth * (1 - scaleFactor) / 2
                         val translationX = if (position < 0) {
                             horzMargin - vertMargin / 2
                         } else {
@@ -125,7 +125,7 @@ fun ViewPager(
     Box(backgroundColor = Color.Transparent) {
         WithConstraints {
             val index = state { startPage }
-            val width = constraints.maxWidth.value.toFloat()
+            val width = constraints.maxWidth.toFloat()
             val offset = animatedFloat(width)
 
             if (range == null) {
