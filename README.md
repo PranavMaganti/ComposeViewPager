@@ -1,4 +1,6 @@
-# ViewPager for Jetpack Compose
+# ViewPager for Jetpack Compose (WIP)
+
+Current Compose Version: dev14
 
 ## Download
 
@@ -25,7 +27,7 @@ ViewPager(Modifier.fillMaxSize()) {
         Row {
             TextButton(
                 onClick = { previous() },
-                modifier = Modifier.gravity(Alignment.Start).padding(8.dp),
+                modifier = Modifier.padding(8.dp),
                 backgroundColor = Color.Red
             ) {
                 Text("Previous", color = Color.White)
@@ -33,7 +35,7 @@ ViewPager(Modifier.fillMaxSize()) {
 
             TextButton(
                 onClick = { next() },
-                modifier = Modifier.gravity(Alignment.End).padding(8.dp),
+                modifier = Modifier.padding(8.dp),
                 backgroundColor = Color.Red
             ) {
                 Text("Next", color = Color.White)
@@ -48,3 +50,8 @@ ViewPager(Modifier.fillMaxSize()) {
 All children of a the ViewPager composable  have access to the attributes of the ViewPager scope. Currently you can access the `index` variable which is the page number which should be composed, a `next()` method which will animate the ViewPager to the next page and a `previous` method which will animate the ViewPager to the previous page. 
 
  
+
+## To Do
+
+1. Finish implementing custom transitions API
+2. Clean up code

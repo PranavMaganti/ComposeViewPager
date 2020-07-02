@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                         Row {
                             TextButton(
                                 onClick = { previous() },
-                                modifier = Modifier.gravity(Alignment.Start).padding(8.dp),
+                                modifier = Modifier.padding(8.dp),
                                 backgroundColor = Color.Red
                             ) {
                                 Text("Previous", color = Color.White)
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
                             TextButton(
                                 onClick = { next() },
-                                modifier = Modifier.gravity(Alignment.End).padding(8.dp),
+                                modifier = Modifier.padding(8.dp),
                                 backgroundColor = Color.Red
                             ) {
                                 Text("Next", color = Color.White)
