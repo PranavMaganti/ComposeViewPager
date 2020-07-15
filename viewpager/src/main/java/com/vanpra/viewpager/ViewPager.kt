@@ -16,7 +16,6 @@ import androidx.ui.foundation.animation.fling
 import androidx.ui.foundation.gestures.DragDirection
 import androidx.ui.foundation.gestures.draggable
 import androidx.ui.graphics.Color
-import androidx.ui.layout.preferredSize
 import androidx.ui.unit.Dp
 import androidx.ui.util.fastForEach
 import kotlin.math.abs
@@ -124,13 +123,14 @@ fun ViewPager(
         throw IllegalArgumentException("The start page supplied was not in the given range")
     }
 
+
     Box(backgroundColor = Color.Transparent) {
         WithConstraints {
             val alphas = remember { mutableListOf(1f, 1f, 1f) }
             val index = state { startPage }
             val width = constraints.maxWidth.toFloat()
             val offset = animatedFloat(width)
-            offset.setBounds(0f, 2 * width)
+            remember { offset.setBounds(0f, 2 * width) }
 
             val anchors = remember { listOf(0f, width, 2 * width) }
 
@@ -148,15 +148,21 @@ fun ViewPager(
                     }
                 })
 
-            onPreCommit(index.value) {
-                offset.snapTo(width)
+            fun indexCheck() {
                 if (range != null) {
+                    println("INDEX: ${index.value}")
+                    println(range.first)
                     when (index.value) {
                         range.first -> offset.setBounds(width, 2 * width)
                         range.last -> offset.setBounds(0f, width)
                         else -> offset.setBounds(0f, 2 * width)
                     }
                 }
+            }
+
+            onPreCommit(index.value) {
+                offset.snapTo(width)
+                indexCheck()
             }
 
 //            onPreCommit(offset.value) {
@@ -201,7 +207,9 @@ fun ViewPager(
                     }
                 }
             }, modifier = draggable) { measurables, constraints, _ ->
-                layout(constraints.maxWidth, constraints.maxHeight) {
+                val height =
+                    measurables.map { it.maxIntrinsicHeight(constraints.maxHeight) }.max() ?: 0
+                layout(constraints.maxWidth, height) {
                     measurables
                         .map { it.measure(constraints) to it.tag }
                         .fastForEach { (placeable, tag) ->
@@ -218,9 +226,3 @@ fun ViewPager(
         }
     }
 }
-
-@Composable
-fun AnimatedFloat.toDp(): Dp {
-    return with(DensityAmbient.current) { this@toDp.value.toDp() }
-}
-

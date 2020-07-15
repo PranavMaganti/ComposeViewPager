@@ -56,8 +56,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
-version '0.1.1'
-group 'com.vanpra'
+version '0.1.0'
+group 'com.vanpra.compose-viewpager'
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -71,7 +71,7 @@ publishing {
             artifact sourcesJar
 
             groupId this.group
-            artifactId 'composeviewpager'
+            artifactId 'viewpager'
             version this.version
 
             pom.withXml {
@@ -92,13 +92,13 @@ publishing {
 bintray {
     user = project.findProperty("bintrayUser").toString()
     key = project.findProperty("bintrayKey").toString()
+    publish = true
 
     publications = ['Production']
-    configurations = ['archives']
 
     pkg {
-        repo = 'ComposeViewPager'
-        name = 'composeviewpager'
+        repo = 'maven'
+        name = 'compose-viewpager:viewpager'
         version {
             name = this.version
             released = new Date()
