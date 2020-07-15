@@ -16,6 +16,7 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.material.TextButton
 import androidx.ui.unit.dp
 import com.vanpra.viewpager.ViewPager
+import com.vanpra.viewpager.ViewPagerTransition
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

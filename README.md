@@ -1,15 +1,15 @@
 # ViewPager for Jetpack Compose (WIP)
 
-Current Compose Version: dev14
+**Current Compose Version: dev14**
 
 ## Download
 
-[ ![Download](https://api.bintray.com/packages/vanpra/ComposeViewPager/composeviewpager/images/download.svg?version=0.1.0) ](https://bintray.com/vanpra/ComposeViewPager/composeviewpager/0.1.0/link)
+[ ![Download](https://api.bintray.com/packages/vanpra/ComposeViewPager/composeviewpager/images/download.svg?version=0.1.1) ](https://bintray.com/vanpra/ComposeViewPager/composeviewpager/0.1.1/link)
 
 ```kotlin
 dependencies {
   ...
-  implementation 'com.vanpra:composeviewpager:0.1.0'
+  implementation 'com.vanpra:composeviewpager:0.1.1'
   ...
 }
 ```
