@@ -1,23 +1,29 @@
 package com.vanpra.viewpager
 
-
-import androidx.animation.AnimatedFloat
-import androidx.animation.AnimationEndReason
-import androidx.animation.PhysicsBuilder
-import androidx.compose.Composable
-import androidx.compose.onPreCommit
-import androidx.compose.remember
-import androidx.compose.state
-import androidx.ui.animation.animatedFloat
-import androidx.ui.core.*
-import androidx.ui.foundation.Box
-import androidx.ui.foundation.animation.AnchorsFlingConfig
-import androidx.ui.foundation.animation.fling
-import androidx.ui.foundation.gestures.DragDirection
-import androidx.ui.foundation.gestures.draggable
-import androidx.ui.graphics.Color
-import androidx.ui.unit.Dp
-import androidx.ui.util.fastForEach
+import androidx.compose.animation.animatedFloat
+import androidx.compose.animation.core.AnimationEndReason
+import androidx.compose.animation.core.OnAnimationEnd
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.foundation.Box
+import androidx.compose.foundation.animation.FlingConfig
+import androidx.compose.foundation.animation.fling
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.onPreCommit
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.state
+import androidx.compose.ui.Layout
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.WithConstraints
+import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.id
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMaxBy
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -50,7 +56,6 @@ private const val MIN_SCALE = 0.75f
 
 private const val MIN_SCALE_ZOOM = 0.9f
 private const val MIN_ALPHA = 0.7f
-
 
 interface ViewPagerTransition {
     fun transformPage(constraints: Constraints, position: Float): PageState
@@ -92,7 +97,7 @@ interface ViewPagerTransition {
                         }
 
                         val alpha = (MIN_ALPHA +
-                                (((scaleFactor - MIN_SCALE_ZOOM) / (1 - MIN_SCALE_ZOOM)) * (1 - MIN_ALPHA)))
+                            (((scaleFactor - MIN_SCALE_ZOOM) / (1 - MIN_SCALE_ZOOM)) * (1 - MIN_ALPHA)))
                         PageState(
                             alpha,
                             scaleFactor,
@@ -110,8 +115,7 @@ interface ViewPagerTransition {
 @Composable
 fun ViewPager(
     modifier: Modifier = Modifier,
-    onNext: () -> Unit = {},
-    onPrevious: () -> Unit = {},
+    onPageChange: (Int) -> Unit = {},
     range: IntRange? = null,
     startPage: Int = 0,
     enabled: Boolean = true,
@@ -123,30 +127,31 @@ fun ViewPager(
         throw IllegalArgumentException("The start page supplied was not in the given range")
     }
 
-
     Box(backgroundColor = Color.Transparent) {
         WithConstraints {
             val alphas = remember { mutableListOf(1f, 1f, 1f) }
+
             val index = state { startPage }
+
             val width = constraints.maxWidth.toFloat()
             val offset = animatedFloat(width)
             remember { offset.setBounds(0f, 2 * width) }
 
             val anchors = remember { listOf(0f, width, 2 * width) }
 
-            val flingConfig = AnchorsFlingConfig(anchors,
-                animationBuilder = PhysicsBuilder(dampingRatio = 0.8f, stiffness = 1000f),
-                onAnimationEnd = { reason, end, _ ->
-                    if (reason != AnimationEndReason.Interrupted) {
-                        if (end == width * 2) {
-                            index.value += 1
-                            onNext()
-                        } else if (end == 0f) {
-                            index.value -= 1
-                            onPrevious()
-                        }
+            val flingConfig = FlingConfig(
+                anchors,
+                animationSpec = SpringSpec(dampingRatio = 0.8f, stiffness = 1000f),
+            )
+            val onAnimationEnd: OnAnimationEnd = { reason, end, _ ->
+                if (reason != AnimationEndReason.Interrupted) {
+                    if (end == width * 2) {
+                        index.value += 1
+                    } else if (end == 0f) {
+                        index.value -= 1
                     }
-                })
+                }
+            }
 
             fun indexCheck() {
                 if (range != null) {
@@ -162,7 +167,11 @@ fun ViewPager(
 
             onPreCommit(index.value) {
                 offset.snapTo(width)
+            }
+
+            onCommit(index.value) {
                 indexCheck()
+                onPageChange(index.value)
             }
 
 //            onPreCommit(offset.value) {
@@ -187,40 +196,40 @@ fun ViewPager(
                     })
             }
 
-
             val draggable = modifier.draggable(
-                dragDirection = DragDirection.Horizontal,
-                onDragDeltaConsumptionRequested = {
+                orientation = Orientation.Horizontal,
+                onDrag = {
                     val old = offset.value
-                    offset.snapTo(offset.value - (it * 0.5f))
+                    offset.snapTo(offset.value - (it * 0.7f))
                     offset.value - old
-                }, onDragStopped = { offset.fling(flingConfig, -(it * 0.6f)) },
+                }, onDragStopped = { offset.fling(-(it * 0.7f), flingConfig, onAnimationEnd) },
                 enabled = enabled
             )
 
-            Layout(children = {
-                for (x in -1..1) {
-                    Box(Modifier.tag(x + 1).drawOpacity(alphas[x + 1])) {
-                        screenItem(
-                            ViewPagerImpl(index.value + x, increment)
-                        )
+            Box(draggable) {
+                Layout(children = {
+                    for (x in -1..1) {
+                        Box(Modifier.layoutId(x + 1).drawOpacity(alphas[x + 1])) {
+                            screenItem(
+                                ViewPagerImpl(index.value + x, increment)
+                            )
+                        }
                     }
-                }
-            }, modifier = draggable) { measurables, constraints, _ ->
-                val height =
-                    measurables.map { it.maxIntrinsicHeight(constraints.maxHeight) }.max() ?: 0
-                layout(constraints.maxWidth, height) {
-                    measurables
-                        .map { it.measure(constraints) to it.tag }
-                        .fastForEach { (placeable, tag) ->
+                }, modifier = modifier) { measurables, constraints ->
+                    val placeables = measurables.map { it.measure(constraints) to it.id }
+                    val height = placeables.fastMaxBy { it.first.height }?.first?.height ?: 0
+
+                    layout(constraints.maxWidth, height) {
+                        placeables.fastForEach { (placeable, tag) ->
                             if (tag is Int) {
                                 placeable.place(
                                     x = (constraints.maxWidth * tag)
-                                            - offset.value.toInt(),
+                                        - offset.value.toInt(),
                                     y = 0
                                 )
                             }
                         }
+                    }
                 }
             }
         }

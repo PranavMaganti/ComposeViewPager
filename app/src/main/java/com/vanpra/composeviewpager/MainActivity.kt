@@ -2,15 +2,17 @@ package com.vanpra.composeviewpager
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.ui.core.Modifier
-import androidx.ui.core.setContent
-import androidx.ui.foundation.Box
-import androidx.ui.foundation.Text
-import androidx.ui.graphics.Color
-import androidx.ui.layout.*
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.TextButton
-import androidx.ui.unit.dp
+import androidx.compose.foundation.Box
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TextButton
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.unit.dp
 import com.vanpra.viewpager.ViewPager
 
 class MainActivity : AppCompatActivity() {
@@ -18,17 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                Box(backgroundColor = Color.Red) {
-                    ViewPager(range = IntRange(0, 1)) {
-                        val modifier = when(index % 4) {
-                            0 -> Modifier.height(100.dp)
-                            1 -> Modifier.height(200.dp)
-                            2 -> Modifier.height(300.dp)
-                            else -> Modifier.height(400.dp)
-                        }
-
+                Box(backgroundColor = Color.Red, modifier = Modifier.fillMaxSize()) {
+                    ViewPager(range = IntRange(0, Int.MAX_VALUE)) {
                         Box(
-                            modifier = Modifier.fillMaxWidth().padding(8.dp).plus(modifier),
+                            modifier = Modifier.fillMaxSize().padding(8.dp),
                             backgroundColor = Color.Blue
                         ) {
                             Text("Index: $index", Modifier.padding(8.dp))
