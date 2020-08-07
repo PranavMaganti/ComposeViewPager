@@ -4,12 +4,12 @@
 
 ## Download
 
- [ ![Download](https://api.bintray.com/packages/vanpra/maven/compose-viewpager%3Acore/images/download.svg) ](https://bintray.com/vanpra/maven/compose-viewpager%3Acore/_latestVersion)
+ [ ![Download](https://api.bintray.com/packages/vanpra/maven/compose-viewpager%3Aviewpager/images/download.svg) ](https://bintray.com/vanpra/maven/compose-viewpager%3Aviewpager/_latestVersion)
 
 ```kotlin
 dependencies {
   ...
-  implementation 'com.vanpra.compose-viewpager:core:0.1.2'
+  implementation 'com.vanpra.compose-viewpager:viewpager:0.1.2'
   ...
 }
 ```

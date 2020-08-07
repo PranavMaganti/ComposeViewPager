@@ -71,7 +71,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
 }
 
-val artifactName = "core"
+val artifactName = "viewpager"
 val artifactGroup = "com.vanpra.compose-viewpager"
 val artifactVersion = "0.1.2"
 
